@@ -48,6 +48,11 @@ export default function MyOrders() {
     }
   };
 
+  const handleEditStatus = (id) => {
+    navigate(`/add-order/${id}`);
+    console.log("OrderRow", id)
+  };
+
   if (loading) return <p className="p-4">Cargando órdenes...</p>;
   if (error) return <p className="p-4 text-red-600">{error}</p>;
 
@@ -62,7 +67,12 @@ export default function MyOrders() {
           + Add Order
         </button>
       </div>
-      <OrdersTable orders={orders} onDelete={handleDelete} />
+      <OrdersTable
+        orders={orders}
+        onDelete={handleDelete}
+        onEditStatus={handleEditStatus}
+
+      />
     </div>
   );
 }

@@ -13,7 +13,7 @@ export default function OrderRow({ order, onDelete, onEditStatus }) {
         <Pencil
           className="text-blue-500 cursor-pointer"
           onClick={() => onEditStatus(order.id)}
-        />
+          />
         <Trash
           className="text-red-500 cursor-pointer"
           onClick={() => onDelete(order.id)}
