@@ -1,6 +1,6 @@
 import { Pencil, Trash } from "lucide-react";
 
-export default function OrderRow({ order }) {
+export default function OrderRow({ order, onDelete }) {
   return (
     <tr className="border-b">
       <td className="p-2">{order.id}</td>
@@ -11,7 +11,10 @@ export default function OrderRow({ order }) {
       <td className="p-2">{order.status}</td>
       <td className="p-2 flex gap-2">
         <Pencil className="text-blue-500 cursor-pointer" />
-        <Trash className="text-red-500 cursor-pointer" />
+        <Trash
+          className="text-red-500 cursor-pointer"
+          onClick={() => onDelete(order.id)}
+        />
       </td>
     </tr>
   );

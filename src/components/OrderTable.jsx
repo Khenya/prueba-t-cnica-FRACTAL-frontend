@@ -1,7 +1,7 @@
 import OrderRow from "../components/OrderRow";
 
-export default function OrdersTable({ orders }) {
-    return (
+export default function OrdersTable({ orders, onDelete }) {
+  return (
     <div className="overflow-x-auto">
       <table className="table-auto w-full border">
         <thead>
@@ -17,7 +17,7 @@ export default function OrdersTable({ orders }) {
         </thead>
         <tbody>
           {orders.map((order) => (
-            <OrderRow key={order.id} order={order} />
+            <OrderRow key={order.id} order={order} onDelete={onDelete} />
           ))}
         </tbody>
       </table>
