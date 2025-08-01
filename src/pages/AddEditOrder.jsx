@@ -17,7 +17,6 @@ export default function AddEditOrder() {
 
   const [allProducts, setAllProducts] = useState([]);
 
-  // Obtener todos los productos
   useEffect(() => {
     fetch("http://localhost:3000/api/products")
       .then((res) => res.json())
@@ -28,7 +27,6 @@ export default function AddEditOrder() {
       });
   }, []);
 
-  // Obtener la orden si estamos editando
   useEffect(() => {
     if (isEdit) {
       fetch(`http://localhost:3000/api/orders/${id}`)
@@ -51,7 +49,6 @@ export default function AddEditOrder() {
     }
   }, [id, isEdit]);
 
-  // Calcular precio final
   useEffect(() => {
     const total = order.products.reduce((acc, item) => {
       const producto = allProducts.find(
@@ -73,7 +70,6 @@ export default function AddEditOrder() {
     setOrder((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Agregar/quitar producto
   const handleCheckboxChange = (productId) => {
     const exists = order.products.some(
       (p) => parseInt(p.product_id) === productId
@@ -92,7 +88,6 @@ export default function AddEditOrder() {
     setOrder((prev) => ({ ...prev, products: updatedProducts }));
   };
 
-  // Cambiar cantidad
   const handleQuantityChange = (productId, quantity) => {
     const updatedProducts = order.products.map((p) =>
       parseInt(p.product_id) === productId
@@ -116,7 +111,7 @@ export default function AddEditOrder() {
         order_number: order.order_number,
         date: new Date(order.date).toISOString().split("T")[0],
         final_price: finalPrice,
-        status: order.status.toLowerCase(), // 🔥 aquí está el fix
+        status: order.status.toLowerCase(), 
         products: order.products.map((p) => ({
           product_id: parseInt(p.product_id),
           quantity: parseInt(p.quantity),
@@ -225,13 +220,13 @@ export default function AddEditOrder() {
             onClick={() => navigate("/")}
             className="bg-gray-300 px-4 py-2 rounded"
           >
-            Cancelar
+            Cancel
           </button>
           <button
             type="submit"
             className="bg-blue-600 text-white px-4 py-2 rounded"
           >
-            {isEdit ? "Actualizar" : "Crear"}
+            {isEdit ? "Update" : "Create"}
           </button>
         </div>
       </form>

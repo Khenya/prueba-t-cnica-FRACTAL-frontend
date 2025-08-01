@@ -50,7 +50,6 @@ export default function MyOrders() {
 
   const handleEditStatus = (id) => {
     navigate(`/add-order/${id}`);
-    console.log("OrderRow", id)
   };
 
   if (loading) return <p className="p-4">Cargando órdenes...</p>;
@@ -65,6 +64,12 @@ export default function MyOrders() {
           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
         >
           + Add Order
+        </button>
+        <button
+          onClick={() => navigate("/products")}
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        >
+          + Add Product
         </button>
       </div>
       <OrdersTable
