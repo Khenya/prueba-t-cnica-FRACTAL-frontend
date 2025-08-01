@@ -6,43 +6,71 @@ export default function AddEditOrder() {
   const navigate = useNavigate();
   const isEdit = !!id;
 
+  const today = new Date().toISOString().split("T")[0];
+
   const [order, setOrder] = useState({
     order_number: "",
-    date: "",
-    final_price: "",
+    date: today,
+    final_price: 0,
     status: "Pending",
-    products: [{ product_id: "", quantity: 1 }],
+    products: [], // Array of { product_id }
   });
 
+  const [allProducts, setAllProducts] = useState([]);
+
   useEffect(() => {
+
+    fetch("http://localhost:3000/api/products")
+      .then((res) => res.json())
+      .then((data) => setAllProducts(data.data || []))
+      .catch(() => alert("Error al cargar productos"));
+
     if (isEdit) {
       fetch(`http://localhost:3000/api/orders/${id}`)
         .then((res) => res.json())
         .then((data) => {
-          setOrder(data.data);
+          const fetchedOrder = data.data;
+          setOrder({
+            ...fetchedOrder,
+            products: fetchedOrder.products.map((p) => ({
+              product_id: p.product_id,
+            })),
+          });
         })
         .catch(() => alert("Error al cargar la orden"));
     }
   }, [id]);
+
+  useEffect(() => {
+    const total = order.products.reduce((acc, item) => {
+      const found = allProducts.find((p) => p.id === parseInt(item.product_id));
+      return found ? acc + parseFloat(found.unit_price) : acc;
+    }, 0);
+
+    setOrder((prev) => ({ ...prev, final_price: total.toFixed(2) }));
+  }, [order.products, allProducts]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setOrder((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleProductChange = (index, field, value) => {
-    const updatedProducts = [...order.products];
-    updatedProducts[index][field] = value;
+  const handleCheckboxChange = (productId) => {
+    const exists = order.products.some(
+      (p) => parseInt(p.product_id) === productId
+    );
+
+    let updatedProducts;
+    if (exists) {
+      updatedProducts = order.products.filter(
+        (p) => parseInt(p.product_id) !== productId
+      );
+    } else {
+      updatedProducts = [...order.products, { product_id: productId }];
+    }
+
     setOrder((prev) => ({ ...prev, products: updatedProducts }));
   };
-
-  const addProductRow = () => {
-    setOrder((prev) => ({
-      ...prev,
-      products: [...prev.products, { product_id: "", quantity: 1 }],
-    }));
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     const url = isEdit
@@ -54,7 +82,13 @@ export default function AddEditOrder() {
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(order),
+        body: JSON.stringify({
+          ...order,
+          products: order.products.map((p) => ({
+            product_id: parseInt(p.product_id),
+            quantity: 1,
+          })),
+        }),
       });
 
       if (!res.ok) throw new Error("Error al guardar la orden");
@@ -74,7 +108,7 @@ export default function AddEditOrder() {
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           name="order_number"
-          placeholder="Número de orden"
+          placeholder="Order Number"
           value={order.order_number}
           onChange={handleChange}
           required
@@ -84,18 +118,21 @@ export default function AddEditOrder() {
           name="date"
           type="date"
           value={order.date}
-          onChange={handleChange}
-          required
-          className="w-full border p-2 rounded"
+          disabled
+          className="w-full border p-2 rounded bg-gray-100"
         />
         <input
           name="final_price"
-          type="number"
-          placeholder="Precio final"
-          value={order.final_price}
-          onChange={handleChange}
-          required
-          className="w-full border p-2 rounded"
+          type="text"
+          value={`$${order.final_price}`}
+          disabled
+          className="w-full border p-2 rounded bg-gray-100"
+        />
+        <input
+          type="text"
+          value={`# Products: ${order.products.length}`}
+          disabled
+          className="w-full border p-2 rounded bg-gray-100"
         />
         <select
           name="status"
@@ -108,35 +145,21 @@ export default function AddEditOrder() {
           <option value="Completed">Completed</option>
         </select>
 
-        <h3 className="text-lg mt-4">Productos</h3>
-        {order.products.map((product, index) => (
-          <div key={index} className="flex gap-2 mb-2">
-            <input
-              placeholder="ID del producto"
-              value={product.product_id}
-              onChange={(e) =>
-                handleProductChange(index, "product_id", e.target.value)
-              }
-              className="flex-1 border p-2 rounded"
-            />
-            <input
-              type="number"
-              placeholder="Cantidad"
-              value={product.quantity}
-              onChange={(e) =>
-                handleProductChange(index, "quantity", e.target.value)
-              }
-              className="w-24 border p-2 rounded"
-            />
-          </div>
-        ))}
-        <button
-          type="button"
-          onClick={addProductRow}
-          className="text-sm text-blue-500 hover:underline"
-        >
-          + Agregar producto
-        </button>
+        <h3 className="text-lg mt-4">Seleccionar productos</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          {allProducts.map((product) => (
+            <label key={product.id} className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={order.products.some(
+                  (p) => parseInt(p.product_id) === product.id
+                )}
+                onChange={() => handleCheckboxChange(product.id)}
+              />
+              {product.name} – ${product.price}
+            </label>
+          ))}
+        </div>
 
         <div className="flex justify-end gap-4 mt-4">
           <button
