@@ -1,12 +1,16 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import OrdersPage from "./pages/MyOrders.jsx";
+import MyOrders from "./pages/MyOrders";
+import AddEditOrder from "./pages/AddEditOrder"; 
 
-export default function App() {
+function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<OrdersPage />} />
+        <Route path="/" element={<MyOrders />} />
+        <Route path="/add-order" element={<AddEditOrder />} />
       </Routes>
     </Router>
   );
 }
+
+export default App;

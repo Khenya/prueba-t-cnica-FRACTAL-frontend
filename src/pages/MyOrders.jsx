@@ -8,11 +8,11 @@ export default function MyOrders() {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
+  const fetchOrders = () => {
+    setLoading(true);
     fetch("http://localhost:3000/api/orders")
       .then((res) => res.json())
       .then((data) => {
-        console.log("✅ Datos recibidos:", data);
         if (Array.isArray(data.data)) {
           setOrders(data.data);
         } else {
@@ -24,6 +24,10 @@ export default function MyOrders() {
         setError("No se pudieron cargar las órdenes");
       })
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchOrders();
   }, []);
 
   const handleDelete = async (id) => {
@@ -58,7 +62,6 @@ export default function MyOrders() {
           + Add Order
         </button>
       </div>
-
       <OrdersTable orders={orders} onDelete={handleDelete} />
     </div>
   );
