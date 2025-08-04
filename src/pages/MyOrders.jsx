@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import OrdersTable from "../components/OrderTable";
+import api from "../api/api";
 
 export default function MyOrders() {
   const [orders, setOrders] = useState([]);
@@ -10,11 +11,10 @@ export default function MyOrders() {
 
   const fetchOrders = () => {
     setLoading(true);
-    fetch("http://localhost:3000/api/orders")
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data.data)) {
-          setOrders(data.data);
+    api.get("/orders")
+      .then((res) => {
+        if (Array.isArray(res.data.data)) {
+          setOrders(res.data.data);
         } else {
           throw new Error("Respuesta inválida del servidor");
         }
@@ -35,12 +35,7 @@ export default function MyOrders() {
     if (!confirmed) return;
 
     try {
-      const res = await fetch(`http://localhost:3000/api/orders/${id}`, {
-        method: "DELETE",
-      });
-
-      if (!res.ok) throw new Error("Error al eliminar la orden");
-
+      await api.delete(`/orders/${id}`);
       setOrders((prev) => prev.filter((order) => order.id !== id));
     } catch (err) {
       alert("No se pudo eliminar la orden");
@@ -59,24 +54,25 @@ export default function MyOrders() {
     <div className="p-6">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">My Orders</h1>
-        <button
-          onClick={() => navigate("/add-order")}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          + Add Order
-        </button>
-        <button
-          onClick={() => navigate("/products")}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          + Add Product
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => navigate("/add-order")}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
+            + Add Order
+          </button>
+          <button
+            onClick={() => navigate("/products")}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
+            + Add Product
+          </button>
+        </div>
       </div>
       <OrdersTable
         orders={orders}
         onDelete={handleDelete}
         onEditStatus={handleEditStatus}
-
       />
     </div>
   );

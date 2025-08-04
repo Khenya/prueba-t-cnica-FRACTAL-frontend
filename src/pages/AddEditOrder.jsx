@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import api from "../api/api";
 
 export default function AddEditOrder() {
   const { id } = useParams();
@@ -18,9 +19,8 @@ export default function AddEditOrder() {
   const [allProducts, setAllProducts] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/products")
-      .then((res) => res.json())
-      .then((data) => setAllProducts(data.data || []))
+    api.get("/products")
+      .then((res) => setAllProducts(res.data.data || []))
       .catch((err) => {
         console.error("❌ Error al cargar productos:", err);
         alert("Error al cargar productos");
@@ -29,13 +29,9 @@ export default function AddEditOrder() {
 
   useEffect(() => {
     if (isEdit) {
-      fetch(`http://localhost:3000/api/orders/${id}`)
+      api.get(`/orders/${id}`)
         .then((res) => {
-          if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-          return res.json();
-        })
-        .then((data) => {
-          const fetchedOrder = data.data;
+          const fetchedOrder = res.data.data;
           if (!fetchedOrder) throw new Error("Orden no encontrada");
           setOrder({
             ...fetchedOrder,
@@ -96,39 +92,28 @@ export default function AddEditOrder() {
     );
     setOrder((prev) => ({ ...prev, products: updatedProducts }));
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const url = isEdit
-      ? `http://localhost:3000/api/orders/${id}`
-      : "http://localhost:3000/api/orders";
-    const method = isEdit ? "PUT" : "POST";
-
     const finalPrice = parseFloat(order.final_price);
+    const body = {
+      order_number: order.order_number,
+      date: new Date(order.date).toISOString().split("T")[0],
+      final_price: finalPrice,
+      status: order.status.toLowerCase(),
+      products: order.products.map((p) => ({
+        product_id: parseInt(p.product_id),
+        quantity: parseInt(p.quantity),
+      })),
+    };
 
     try {
-      const body = {
-        order_number: order.order_number,
-        date: new Date(order.date).toISOString().split("T")[0],
-        final_price: finalPrice,
-        status: order.status.toLowerCase(), 
-        products: order.products.map((p) => ({
-          product_id: parseInt(p.product_id),
-          quantity: parseInt(p.quantity),
-        })),
-      };
-
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-
-      if (!res.ok) {
-        const error = await res.text();
-        throw new Error(`Error al guardar la orden: ${error}`);
+      if (isEdit) {
+        await api.put(`/orders/${id}`, body);
+      } else {
+        await api.post("/orders", body);
       }
-
       navigate("/");
     } catch (err) {
       console.error("❌ Error al enviar orden:", err);
@@ -164,7 +149,6 @@ export default function AddEditOrder() {
           disabled
           className="w-full border p-2 rounded bg-gray-100"
         />
-
         <input
           type="text"
           value={`# Products: ${order.products.length}`}

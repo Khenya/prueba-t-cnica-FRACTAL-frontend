@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import api from "../api/api";
 
 export default function ProductManager() {
   const [products, setProducts] = useState([]);
@@ -10,11 +11,8 @@ export default function ProductManager() {
   }, []);
 
   const fetchProducts = async () => {
-
-    const res = await fetch("http://localhost:3000/api/products");
-    const data = await res.json();
-    setProducts(data.data);
-
+    const res = await api.get("/products");
+    setProducts(res.data.data);
   };
 
   const handleChange = (e) => {
@@ -24,18 +22,11 @@ export default function ProductManager() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const method = editing ? "PUT" : "POST";
-      const url = editing
-        ? `http://localhost:3000/api/products/${editing}`
-        : "http://localhost:3000/api/products";
-
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newProduct),
-      });
-
-      if (!res.ok) throw new Error("Error save product");
+      if (editing) {
+        await api.put(`/products/${editing}`, newProduct);
+      } else {
+        await api.post("/products", newProduct);
+      }
 
       await fetchProducts();
       setNewProduct({ name: "", unit_price: "" });
@@ -53,10 +44,7 @@ export default function ProductManager() {
   const handleDelete = async (id) => {
     if (!confirm("You are about to delete this product. Are you sure?")) return;
     try {
-      const res = await fetch(`http://localhost:3000/api/products/${id}`, {
-        method: "DELETE",
-      });
-      if (!res.ok) throw new Error("Error delete product");
+      await api.delete(`/products/${id}`);
       await fetchProducts();
     } catch (err) {
       alert(err.message);
