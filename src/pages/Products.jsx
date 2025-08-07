@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../api/api";
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 export default function ProductManager() {
   const [products, setProducts] = useState([]);
@@ -52,75 +53,86 @@ export default function ProductManager() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto mt-8 p-4 border rounded shadow">
-      <h2 className="text-xl font-bold mb-4">Products</h2>
-      <form onSubmit={handleSubmit} className="mb-4 space-y-2">
-        <input
-          type="text"
-          name="name"
-          placeholder="Producto name"
-          value={newProduct.name}
-          onChange={handleChange}
-          required
-          className="w-full border p-2 rounded"
-        />
-        <input
-          type="number"
-          name="unit_price"
-          placeholder="unit price"
-          value={newProduct.unit_price}
-          onChange={handleChange}
-          required
-          className="w-full border p-2 rounded"
-        />
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          {editing ? "Actualizar" : "Create"}
-        </button>
+    <div className="card shadow p-4 mx-auto" style={{ width: "100%", maxWidth: "900px" }}>
+      <h2 className="text-primary fw-bold mb-4">Products</h2>
+
+      <form onSubmit={handleSubmit} className="row g-3 mb-4">
+        <div className="col-md-6">
+          <input
+            type="text"
+            name="name"
+            placeholder="Product Name"
+            value={newProduct.name}
+            onChange={handleChange}
+            required
+            className="form-control"
+          />
+        </div>
+        <div className="col-md-6">
+          <input
+            type="number"
+            name="unit_price"
+            placeholder="Unit Price"
+            value={newProduct.unit_price}
+            onChange={handleChange}
+            required
+            className="form-control"
+          />
+        </div>
+        <div className="col-12 d-flex justify-content-end">
+          <button type="submit" className="btn btn-primary">
+            {editing ? "Update" : "Create"}
+          </button>
+        </div>
       </form>
 
-      <table className="w-full border">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="border p-2">ID</th>
-            <th className="border p-2">Name</th>
-            <th className="border p-2">Unit Price</th>
-            <th className="border p-2">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {products.map((p) => (
-            <tr key={p.id}>
-              <td className="border p-2 text-center">{p.id}</td>
-              <td className="border p-2">{p.name}</td>
-              <td className="border p-2 text-right">${p.unit_price}</td>
-              <td className="border p-2 text-center space-x-2">
-                <button
-                  onClick={() => handleEdit(p)}
-                  className="bg-yellow-400 px-2 py-1 rounded"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(p.id)}
-                  className="bg-red-500 text-white px-2 py-1 rounded"
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
-          {products.length === 0 && (
+      <div className="table-responsive">
+        <table className="table table-bordered text-center align-middle">
+          <thead className="table-light">
             <tr>
-              <td colSpan={4} className="p-2 text-center text-gray-500">
-                Not products found
-              </td>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Unit Price</th>
+              <th>Action</th>
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {products.length > 0 ? (
+              products.map((p) => (
+                <tr key={p.id}>
+                  <td>{p.id}</td>
+                  <td>{p.name}</td>
+                  <td>${p.unit_price}</td>
+                  <td>
+                    <div className="d-flex justify-content-center gap-2">
+                      <button
+                        onClick={() => handleEdit(p)}
+                        className="btn btn-sm btn-outline-secondary"
+                        title="Edit"
+                      >
+                        <i className="bi bi-pencil"></i>
+                      </button>
+                      <button
+                        onClick={() => handleDelete(p.id)}
+                        className="btn btn-sm btn-outline-danger"
+                        title="Delete"
+                      >
+                        <i className="bi bi-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="4" className="text-muted">
+                  No hay productos disponibles
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
