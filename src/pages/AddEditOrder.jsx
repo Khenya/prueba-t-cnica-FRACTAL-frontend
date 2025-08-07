@@ -122,95 +122,102 @@ export default function AddEditOrder() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">
-        {isEdit ? "Editar Orden" : "Nueva Orden"}
-      </h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          name="order_number"
-          placeholder="Order Number"
-          value={order.order_number}
-          onChange={handleChange}
-          required
-          className="w-full border p-2 rounded"
-        />
-        <input
-          name="date"
-          type="date"
-          value={order.date}
-          disabled
-          className="w-full border p-2 rounded bg-gray-100"
-        />
-        <input
-          name="final_price"
-          type="text"
-          value={order.final_price}
-          disabled
-          className="w-full border p-2 rounded bg-gray-100"
-        />
-        <input
-          type="text"
-          value={`# Products: ${order.products.length}`}
-          disabled
-          className="w-full border p-2 rounded bg-gray-100"
-        />
-        <select
-          name="status"
-          value={order.status}
-          onChange={handleChange}
-          className="w-full border p-2 rounded"
-        >
-          <option value="Pending">Pending</option>
-          <option value="Processing">Processing</option>
-          <option value="Completed">Completed</option>
-        </select>
+    <div className="card shadow p-4 mx-auto" style={{ width: "100%", maxWidth: "900px" }}>
+      <h2 className="text-primary fw-bold mb-4">
+        {isEdit ? "Add Order" : "New Order"}
+      </h2>
 
-        <h3 className="text-lg mt-4 font-semibold">Seleccionar productos</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {allProducts.map((product) => {
-            const selected = order.products.find(
-              (p) => parseInt(p.product_id) === product.id
-            );
-            return (
-              <label key={product.id} className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={!!selected}
-                  onChange={() => handleCheckboxChange(product.id)}
-                />
-                <span className="flex-1">
-                  {product.name} – ${product.unit_price}
-                </span>
-                {selected && (
-                  <input
-                    type="number"
-                    min="1"
-                    value={selected.quantity}
-                    onChange={(e) =>
-                      handleQuantityChange(product.id, e.target.value)
-                    }
-                    className="w-16 border rounded p-1"
-                  />
-                )}
-              </label>
-            );
-          })}
+      <form onSubmit={handleSubmit} className="row g-3">
+        <div className="col-12">
+          <input
+            name="order_number"
+            placeholder="New Order"
+            value={order.order_number}
+            onChange={handleChange}
+            required
+            className="form-control"
+          />
         </div>
 
-        <div className="flex justify-end gap-4 mt-6">
+        <div className="col-md-6">
+          <input
+            name="date"
+            type="date"
+            value={order.date}
+            disabled
+            className="form-control"
+          />
+        </div>
+
+        <div className="col-md-6">
+          <input
+            name="final_price"
+            type="text"
+            value={order.final_price}
+            disabled
+            className="form-control"
+          />
+        </div>
+
+        <div className="col-12">
+          <select
+            name="status"
+            value={order.status}
+            onChange={handleChange}
+            className="form-select"
+          >
+            <option value="Pending">Pending</option>
+            <option value="Processing">Processing</option>
+            <option value="Completed">Completed</option>
+          </select>
+        </div>
+
+        <div className="col-12">
+          <h5 className="fw-bold mt-3">Select Products</h5>
+          <div className="row">
+            {allProducts.map((product) => {
+              const selected = order.products.find(
+                (p) => parseInt(p.product_id) === product.id
+              );
+              return (
+                <div key={product.id} className="col-12 d-flex align-items-center mb-2">
+                  <input
+                    type="checkbox"
+                    className="form-check-input me-2"
+                    checked={!!selected}
+                    onChange={() => handleCheckboxChange(product.id)}
+                  />
+                  <label className="form-check-label me-auto">
+                    {product.name} – ${product.unit_price}
+                  </label>
+                  {selected && (
+                    <input
+                      type="number"
+                      min="1"
+                      value={selected.quantity}
+                      onChange={(e) =>
+                        handleQuantityChange(product.id, e.target.value)
+                      }
+                      className="form-control form-control-sm ms-2"
+                      style={{ width: "70px" }}
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="d-flex justify-content-end gap-2 mt-4">
           <button
             type="button"
             onClick={() => navigate("/")}
-            className="bg-gray-300 px-4 py-2 rounded"
+            className="btn btn-secondary"
           >
             Cancel
           </button>
-          <button
-            type="submit"
-            className="bg-blue-600 text-white px-4 py-2 rounded"
-          >
-            {isEdit ? "Update" : "Create"}
+          <button type="submit" className="btn btn-primary">
+            {isEdit ? "Actualizar" : "Crear"}
           </button>
         </div>
       </form>
