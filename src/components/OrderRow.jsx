@@ -1,23 +1,29 @@
-import { Pencil, Trash } from "lucide-react";
-
 export default function OrderRow({ order, onDelete, onEditStatus }) {
   return (
-    <tr className="border-b">
-      <td className="p-2">{order.id}</td>
-      <td className="p-2">{order.order_number}</td>
-      <td className="p-2">{new Date(order.date).toLocaleDateString()}</td>
-      <td className="p-2">{order.product_count}</td>
-      <td className="p-2">${order.final_price}</td>
-      <td className="p-2">{order.status}</td>
-      <td className="p-2 flex gap-2">
-        <Pencil
-          className="text-blue-500 cursor-pointer"
-          onClick={() => onEditStatus(order.id)}
-          />
-        <Trash
-          className="text-red-500 cursor-pointer"
-          onClick={() => onDelete(order.id)}
-        />
+    <tr>
+      <td className="text-center align-middle">{order.id}</td>
+      <td className="text-center align-middle">{order.order_number}</td>
+      <td className="text-center align-middle">{new Date(order.date).toLocaleDateString()}</td>
+      <td className="text-center align-middle">{order.product_count}</td>
+      <td className="text-center align-middle">${order.final_price}</td>
+      <td className="text-center align-middle">{order.status}</td>
+      <td className="text-center align-middle">
+        <div className="d-flex justify-content-center gap-2">
+          <button
+            onClick={() => onEditStatus(order.id)}
+            className="btn btn-sm btn-outline-secondary"
+            title="Edit"
+          >
+            <i className="bi bi-pencil"></i>
+          </button>
+          <button
+            onClick={() => onDelete(order.id)}
+            className="btn btn-sm btn-outline-danger"
+            title="Delete"
+          >
+            <i className="bi bi-trash"></i>
+          </button>
+        </div>
       </td>
     </tr>
   );
