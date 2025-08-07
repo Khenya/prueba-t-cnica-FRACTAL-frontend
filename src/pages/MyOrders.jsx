@@ -47,28 +47,42 @@ export default function MyOrders() {
     navigate(`/add-order/${id}`);
   };
 
-  if (loading) return <p className="p-4">Cargando órdenes...</p>;
-  if (error) return <p className="p-4 text-red-600">{error}</p>;
+  if (loading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center vh-100">
+        <p className="text-center fs-4">Cargando órdenes...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="d-flex justify-content-center align-items-center vh-100">
+        <p className="text-center text-danger fs-4">{error}</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">My Orders</h1>
-        <div className="flex gap-2">
+    <div className="card shadow p-4 mx-auto" style={{ width: "100%", maxWidth: "900px" }}>
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h1 className="h4 text-primary fw-bold mb-0">My Orders</h1>
+        <div className="d-flex gap-2">
           <button
             onClick={() => navigate("/add-order")}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            className="btn btn-primary"
           >
             + Add Order
           </button>
           <button
             onClick={() => navigate("/products")}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            className="btn btn-success"
           >
             + Add Product
           </button>
         </div>
       </div>
+
       <OrdersTable
         orders={orders}
         onDelete={handleDelete}
